@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional
 from enum import Enum
-import httpx
+from httpx import AsyncClient
 
 app = FastAPI()
 
@@ -14,9 +14,10 @@ class GenderEnum(Enum):
 
 
 @app.get("/")
-async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optional[dict]:
+async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optional[dict] :
     """Функция по вычислению самого высокого героя."""
-    async with httpx.AsyncClient() as client:
+
+    async with AsyncClient() as client:
         response = await client.get(URL)
 
         if response.status_code != 200:
@@ -27,7 +28,7 @@ async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optio
         filtered_heroes = [
             hero
             for hero in heroes
-            if hero.get("appearance", {}).get("gender") == gender
+            if hero.get("appearance", {}).get("gender") == gender.value
             and (hero.get("work", {}).get("occupation") not in [None, "-"]) == has_work
         ]
 
