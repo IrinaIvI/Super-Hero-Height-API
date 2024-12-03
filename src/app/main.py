@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional
+from enum import Enum
 import httpx
 
 app = FastAPI()
@@ -7,8 +8,13 @@ app = FastAPI()
 URL = "https://akabab.github.io/superhero-api/api/all.json"
 
 
+class GenderEnum(Enum):
+    male = "Male"
+    female = "Female"
+
+
 @app.get("/")
-async def get_the_tallest_character(gender: str, has_work: bool) -> Optional[dict]:
+async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optional[dict]:
     """Функция по вычислению самого высокого героя."""
     async with httpx.AsyncClient() as client:
         response = await client.get(URL)
