@@ -39,7 +39,6 @@ def parse_height(height_str: str) -> float:
 @app.get("/")
 async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optional[dict] :
     """Функция по вычислению самого высокого героя."""
-
     async with AsyncClient() as client:
         response = await client.get(URL)
 
