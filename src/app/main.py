@@ -37,9 +37,8 @@ async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optio
 
         tallest_hero = max(
             filtered_heroes,
-            key=lambda hero: float(
-                hero.get("appearance").get("height")[1].split(" ")[0]
-            ),
+            key=lambda hero: 
+            float(hero.get("appearance").get("height")[1].split(" ")[0]),
         )
 
         return tallest_hero
