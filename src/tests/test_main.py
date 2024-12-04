@@ -92,3 +92,51 @@ async def test_two_heroes(mocker: MockerFixture):
 
     assert result.get("work").get("occupation") == "teacher"
     mock_get.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_two_heroes(mocker: MockerFixture):
+    mock_get = mocker.patch(
+        "httpx.AsyncClient.get",
+        return_value=Response(
+            status_code=200,
+            json=[
+                {
+                    "appearance": {"gender": "Female", "height": ["-", "0 cm"]},
+                    "work": {"occupation": "teacher"},
+                },
+                {
+                    "appearance": {"gender": "Female", "height": ["6'2", "188 cm"]},
+                    "work": {"occupation": "cowboy"},
+                },
+            ],
+        ),
+    )
+
+    result = await get_the_tallest_character(GenderEnum.female, True)
+
+    assert result.get("work").get("occupation") == "cowboy"
+    mock_get.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_lack_of_info(mocker: MockerFixture):
+    mock_get = mocker.patch(
+        "httpx.AsyncClient.get",
+        return_value=Response(
+            status_code=200,
+            json=[
+                {
+                    "appearance": {"gender": "Female", "height": ["-", "250 cm"]},
+                    "work": {"occupation": "teacher"},
+                },
+                {
+                    "appearance": {"gender": "Female", "height": ["6'2", "188 cm"]},
+                    "work": {"occupation": "cowboy"},
+                },
+            ],
+        ),
+    )
+
+    result = await get_the_tallest_character(GenderEnum.female, True)
+
+    assert result.get("work").get("occupation") == "teacher"
+    mock_get.assert_called_once()

@@ -2,6 +2,9 @@ from fastapi import FastAPI, HTTPException
 from typing import Optional
 from enum import Enum
 from httpx import AsyncClient
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
 
@@ -9,8 +12,28 @@ URL = "https://akabab.github.io/superhero-api/api/all.json"
 
 
 class GenderEnum(Enum):
+    """Перечисление гендера."""
     male = "Male"
     female = "Female"
+
+def parse_height(height_str: str) -> float:
+    if height_str and "-" not in height_str:
+        if "'" in height_str:
+            feet, inches = height_str.split("'")[:2]
+            feet = float(feet.strip())  
+
+            inches = inches.strip()
+            if inches:
+                inches = float(inches)  
+            else:
+                inches = 0.0 
+        else:
+            feet = float(height_str)
+            inches = 0.0
+
+        return feet * 12 + inches
+    
+    return 0.0
 
 
 @app.get("/")
@@ -38,7 +61,7 @@ async def get_the_tallest_character(gender: GenderEnum, has_work: bool) -> Optio
         tallest_hero = max(
             filtered_heroes,
             key=lambda hero: 
-            float(hero.get("appearance").get("height")[1].split(" ")[0]),
+            max(float(hero.get("appearance").get("height")[1].split(" ")[0]), parse_height(hero.get("appearance").get("height")[0].split(" ")[0])),
         )
 
         return tallest_hero
